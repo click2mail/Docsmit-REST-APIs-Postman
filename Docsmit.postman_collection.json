@@ -1,0 +1,1032 @@
+{
+	"info": {
+		"_postman_id": "ce3c9a75-60dd-4ed4-b122-045cf44fa2ed",
+		"name": "Docsmit",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1952778"
+	},
+	"item": [
+		{
+			"name": "Hello",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{docsmit_password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{docsmit_username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{docsmit_baseURL}}",
+					"host": [
+						"{{docsmit_baseURL}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    var responseJson = pm.response.json();",
+							"    var token = responseJson[\"token\"];",
+							"    tests[\"token = \" + token] = true; // this is for printing value to console",
+							"    pm.collectionVariables.set(\"token\",token); ",
+							"    ",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\":\"{{docsmit_username}}\",\n\"password\":\"{{passwordHash}}\",\n\"softwareID\":\"{{softwareID}}\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/token",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/new",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(201);",
+							"",
+							"    var responseJson = pm.response.json();",
+							"    var messageID = responseJson[\"messageID\"];",
+							"    tests[\"messageID = \" + messageID] = true; // this is for printing value to console",
+							"    pm.collectionVariables.set(\"messageID\",messageID); ",
+							"    ",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"title\":\"Mahesh C2M Test 1\",\n\"bodyText\":\"New Message Body Test\",\n\"physicalParties\":[{\"firstName\":\"Mahesh\",\n                    \"lastName\":\"Lavannis\",\n                    \"organization\":\"C2MLLC\",\n                    \"address1\":\"6070 California Circle\",\n                    \"address2\":\"Apt 220\",\n                    \"city\":\"Rockville\",\n                    \"state\":\"MD\",\n                    \"postalCode\":\"20852\",\n                    \"sendType\":\"First Class\"}],\n\"rtnName\":\"Mahesh Lavannis\",\n\"rtnOrganization\":\"C2M LLC\",\n\"rtnAddress1\":\"6070 California Circle\",\n\"rtnAddress2\":\"Apt 100\",\n\"rtnCity\":\"Rockville\",\n\"rtnState\":\"MD\",\n\"rtnZip\":\"20852\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/new",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/{id}/upload",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/mlavannis/Documents/Hello World S3.pdf"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/{{messageID}}/upload",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"{{messageID}}",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/{id}/send",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/{{messageID}}/send",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"{{messageID}}",
+						"send"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/{id}/party",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(201);",
+							"",
+							"    var responseJson = pm.response.json();",
+							"    var partyID = responseJson[0][\"partyID\"];",
+							"    tests[\"partyID = \" + partyID] = true; // this is for printing value to console",
+							"    pm.collectionVariables.set(\"partyID\",partyID); ",
+							"    ",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"physicalParties\":[{\"firstName\":\"Merric\",\n                    \"lastName\":\"Lavannis\",\n                    \"organization\":\"C2MLLC\",\n                    \"address1\":\"6070 California Circle\",\n                    \"address2\":\"Apt 220\",\n                    \"city\":\"Rockville\",\n                    \"state\":\"MD\",\n                    \"postalCode\":\"20852\",\n                    \"sendType\":\"First Class\"},\n                    {\"firstName\":\"Meredith\",\n                    \"lastName\":\"Lavannis\",\n                    \"organization\":\"C2MLLC\",\n                    \"address1\":\"6070 California Circle\",\n                    \"address2\":\"Apt 220\",\n                    \"city\":\"Rockville\",\n                    \"state\":\"MD\",\n                    \"postalCode\":\"20852\",\n                    \"sendType\":\"First Class\"}]}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/{{messageID}}/party",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"{{messageID}}",
+						"party"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/{id}/party/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(202);",
+							"",
+							"    ",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"firstName\":\"Michael\",\n\"lastName\":\"Johnson\",\n\"organization\":\"Johnson On the Spot, Inc.\",\n\"address1\":\"135 Bergen Ave\",\n\"city\":\"Jersey City\",\n\"state\":\"NJ\",\n\"postalCode\":\"07305\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/{{messageID}}/party/{{partyID}}",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"{{messageID}}",
+						"party",
+						"{{partyID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/{id}/party/{id}",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/{{messageID}}/party/{{partyID}}",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"{{messageID}}",
+						"party",
+						"{{partyID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/{id}/priceCheck",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/{{messageID}}/priceCheck",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"{{messageID}}",
+						"priceCheck"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/{id}",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/{{messageID}}",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"{{messageID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/{id}/documentation",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/{{messageID}}/documentation",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"{{messageID}}",
+						"documentation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/{id}/parties",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/{{messageID}}/parties",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"{{messageID}}",
+						"parties"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/{id}/attachments",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    var responseJson = pm.response.json();",
+							"    var fileID = responseJson[0][\"fileID\"];",
+							"    tests[\"fileID = \" + fileID] = true; // this is for printing value to console",
+							"    pm.collectionVariables.set(\"fileID\",fileID); ",
+							"    ",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/{{messageID}}/attachments",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"{{messageID}}",
+						"attachments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/{id}/download/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    var responseJson = pm.response.json();",
+							"    var fileID = responseJson[0][\"fileID\"];",
+							"    tests[\"fileID = \" + fileID] = true; // this is for printing value to console",
+							"    pm.collectionVariables.set(\"fileID\",fileID); ",
+							"    ",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/{{messageID}}/download/{{fileID}}",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"{{messageID}}",
+						"download",
+						"{{fileID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/{id}/transactions",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/{{messageID}}/transactions",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"{{messageID}}",
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/draft",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/draft",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"draft"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/account/info",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/account/info",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"account",
+						"info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/utils/multiCASS",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(202);",
+							"",
+							"    ",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"addresses\":[{\"firstName\":\"Michael\",\n\"lastName\":\"Johnson\",\n\"address1\":\"135 Bergen Ave\",\n\"address2\":\"Apt 101\",\n\"city\":\"Jersey City\",\n\"state\":\"NJ\",\n\"zip\":\"07305\"}]}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/utils/multiCASS",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"utils",
+						"multiCASS"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    var responseJson = pm.response.json();",
+							"    var token = responseJson[\"token\"];",
+							"    tests[\"token = \" + token] = true; // this is for printing value to console",
+							"    pm.collectionVariables.set(\"token\",token); ",
+							"    ",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"softwareID\":\"{{softwareID}}\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/token",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/messages/sent",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "f2dcd5b852326ce5ef6a1f0a6555b156",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{docsmit_baseURL}}/messages/sent?messageIDList=246396,246969,246967,246968",
+					"host": [
+						"{{docsmit_baseURL}}"
+					],
+					"path": [
+						"messages",
+						"sent"
+					],
+					"query": [
+						{
+							"key": "messageIDList",
+							"value": "246396,246969,246967,246968"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "messageID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "partyID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "fileID",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
